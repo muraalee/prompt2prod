@@ -3,7 +3,7 @@
 // then Project settings. In the "Your apps" card, select the Web app.
 // Copy the firebaseConfig object and paste it here.
 export const firebaseConfig = {
-  apiKey: "AIzaSyBgr8TVKMZjxcbfcCMX_WY0Js-OB4GcmgE",
+  apiKey: "",
   authDomain: "ai-project-58a12.firebaseapp.com",
   projectId: "ai-project-58a12",
   storageBucket: "ai-project-58a12.firebasestorage.app",
