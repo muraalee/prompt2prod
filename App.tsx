@@ -10,7 +10,6 @@ import type { BlogPost } from './types';
 import { PostsContext } from './contexts/PostsContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import * as firebaseService from './services/firebaseService';
-import { isFirebaseConfigured } from './firebaseConfig';
 import Alert from './components/Alert';
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   const refetchPosts = useCallback(async () => {
-    if (!isFirebaseConfigured()) return;
     setLoading(true);
     setError(null);
     try {
@@ -34,11 +32,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isFirebaseConfigured()) {
-        refetchPosts();
-    } else {
-        setLoading(false);
-    }
+    refetchPosts();
   }, [refetchPosts]);
 
   const addPost = async (newPostData: firebaseService.NewBlogPost) => {
@@ -61,11 +55,7 @@ function App() {
           <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
             <Header />
             <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {!isFirebaseConfigured() ? (
-                <div className="max-w-2xl mx-auto">
-                    <Alert type="error" message="Firebase is not configured. Please add your configuration details in firebaseConfig.ts to enable data storage." />
-                </div>
-              ) : error ? (
+              {error ? (
                  <div className="max-w-2xl mx-auto">
                     <Alert type="error" message={error} />
                  </div>
