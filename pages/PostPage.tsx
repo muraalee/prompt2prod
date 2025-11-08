@@ -1,21 +1,56 @@
-import React, { useContext } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PostsContext } from '../contexts/PostsContext';
+import * as firebaseService from '../services/firebaseService';
+import type { BlogPost } from '../types';
+import Spinner from '../components/Spinner';
 
 const PostPage: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
-  const postsContext = useContext(PostsContext);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!postId) {
+        setError("Post ID is missing.");
+        setLoading(false);
+        return;
+    };
 
-  if (!postsContext) {
-    return <div>Loading...</div>;
+    const fetchPost = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const fetchedPost = await firebaseService.getPost(postId);
+            if (fetchedPost) {
+                setPost(fetchedPost);
+            } else {
+                setError("Post not found.");
+            }
+        } catch (e) {
+            console.error("Error fetching post:", e);
+            setError("Failed to load the post.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    fetchPost();
+  }, [postId]);
+
+  if (loading) {
+      return (
+          <div className="flex justify-center items-center h-64">
+              <Spinner size="lg" />
+          </div>
+      );
   }
 
-  const post = postsContext.posts.find(p => p.id === postId);
-
-  if (!post) {
+  if (error || !post) {
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold">Post not found</h2>
+        <h2 className="text-2xl font-bold">{error || "Post not found"}</h2>
         <Link to="/" className="text-primary-600 hover:underline mt-4 inline-block">
           Back to Home
         </Link>

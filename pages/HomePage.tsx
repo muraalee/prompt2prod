@@ -1,7 +1,9 @@
+
 import React, { useContext, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { PostsContext } from '../contexts/PostsContext';
 import BlogPostCard from '../components/BlogPostCard';
+import Spinner from '../components/Spinner';
 
 const HomePage: React.FC = () => {
   const postsContext = useContext(PostsContext);
@@ -10,11 +12,11 @@ const HomePage: React.FC = () => {
   const selectedTag = searchParams.get('tag');
 
   if (!postsContext) {
-    return <div>Loading...</div>; // or some error state
+    return <div>Context not available.</div>;
   }
 
-  const { posts } = postsContext;
-
+  const { posts, loading } = postsContext;
+  
   const allTags = useMemo(() => {
     const tagsSet = new Set<string>();
     posts.forEach(post => {
@@ -27,6 +29,14 @@ const HomePage: React.FC = () => {
     if (!selectedTag) return posts;
     return posts.filter(post => post.tags?.includes(selectedTag));
   }, [posts, selectedTag]);
+
+  if (loading) {
+    return (
+        <div className="flex justify-center items-center h-64">
+            <Spinner size="lg" />
+        </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">

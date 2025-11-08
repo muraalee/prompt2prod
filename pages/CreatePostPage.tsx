@@ -1,9 +1,11 @@
+
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PostsContext } from '../contexts/PostsContext';
 import * as geminiService from '../services/geminiService';
 import Spinner from '../components/Spinner';
 import Alert from '../components/Alert';
+import type { NewBlogPost } from '../services/firebaseService';
 
 type LoadingState = 'idle' | 'title' | 'content' | 'image' | 'saving';
 
@@ -70,27 +72,37 @@ const CreatePostPage: React.FC = () => {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!postsContext) {
+        setError("Posts context is not available.");
+        return;
+    }
     if (!title || !content || !imageUrl) {
         setError('Title, content, and an image are required to create a post.');
         return;
     }
     setLoading('saving');
+    setError(null);
     
-    const postTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    try {
+        const postTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
 
-    const newPost = {
-        id: new Date().toISOString(),
-        title,
-        content,
-        imageUrl,
-        createdAt: new Date().toISOString(),
-        tags: postTags,
-    };
-    postsContext?.addPost(newPost);
-    setLoading('idle');
-    navigate(`/post/${newPost.id}`);
+        const newPost: NewBlogPost = {
+            title,
+            content,
+            imageUrl,
+            tags: postTags,
+        };
+
+        const newPostId = await postsContext.addPost(newPost);
+        navigate(`/post/${newPostId}`);
+    } catch (e: any) {
+        console.error("Failed to save post:", e);
+        setError("Failed to save post. Please check your connection and try again.");
+    } finally {
+        setLoading('idle');
+    }
   };
 
   const isLoading = loading !== 'idle';
