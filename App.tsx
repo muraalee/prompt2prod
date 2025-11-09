@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import CreatePostPage from './pages/CreatePostPage';
+import SetupFirebasePage from './pages/SetupFirebasePage';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import type { BlogPost } from './types';
@@ -17,9 +18,10 @@ function App() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [configured, setConfigured] = useState<boolean>(isFirebaseConfigured());
 
   const refetchPosts = useCallback(async () => {
-    if (!isFirebaseConfigured()) return;
+    if (!configured) return;
     setLoading(true);
     setError(null);
     try {
@@ -31,15 +33,21 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [configured]);
 
   useEffect(() => {
-    if (isFirebaseConfigured()) {
+    if (configured) {
         refetchPosts();
     } else {
         setLoading(false);
     }
-  }, [refetchPosts]);
+  }, [refetchPosts, configured]);
+
+  const handleSetupComplete = useCallback(() => {
+    // Refresh the app after setup
+    setConfigured(true);
+    window.location.reload();
+  }, []);
 
   const addPost = async (newPostData: firebaseService.NewBlogPost) => {
     const newPostId = await firebaseService.addPost(newPostData);
@@ -54,6 +62,15 @@ function App() {
     refetchPosts,
   }), [posts, loading, refetchPosts]);
 
+  // Show setup page if Firebase is not configured
+  if (!configured) {
+    return (
+      <ThemeProvider>
+        <SetupFirebasePage onSetupComplete={handleSetupComplete} />
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider>
       <PostsContext.Provider value={postsContextValue}>
@@ -61,11 +78,7 @@ function App() {
           <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
             <Header />
             <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {!isFirebaseConfigured() ? (
-                <div className="max-w-2xl mx-auto">
-                    <Alert type="error" message="Firebase is not configured. Please add your configuration details in firebaseConfig.ts to enable data storage." />
-                </div>
-              ) : error ? (
+              {error ? (
                  <div className="max-w-2xl mx-auto">
                     <Alert type="error" message={error} />
                  </div>

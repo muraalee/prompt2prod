@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { PostsContext } from '../contexts/PostsContext';
 import * as geminiService from '../services/geminiService';
 import Spinner from '../components/Spinner';
+import LoadingMessage from '../components/LoadingMessage';
 import Alert from '../components/Alert';
 import type { NewBlogPost } from '../services/firebaseService';
 
@@ -160,11 +161,11 @@ const CreatePostPage: React.FC = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-            <button type="button" onClick={handleGenerateTitle} disabled={isLoading} className="flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                {loading === 'title' ? <Spinner size="sm"/> : '✨ Generate Title with AI'}
+            <button type="button" onClick={handleGenerateTitle} disabled={isLoading} className="flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px]">
+                {loading === 'title' ? <LoadingMessage type="title" size="sm" /> : '✨ Generate Title with AI'}
             </button>
-            <button type="button" onClick={handleGenerateContent} disabled={isLoading} className="flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                {loading === 'content' ? <Spinner size="sm"/> : '✍️ Generate Content with AI'}
+            <button type="button" onClick={handleGenerateContent} disabled={isLoading} className="flex items-center justify-center w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[40px]">
+                {loading === 'content' ? <LoadingMessage type="content" size="sm" /> : '✍️ Generate Content with AI'}
             </button>
         </div>
 
@@ -179,9 +180,15 @@ const CreatePostPage: React.FC = () => {
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 4v.01M28 8l-6 6h-6a4 4 0 00-4 4v16a4 4 0 004 4h24a4 4 0 004-4V12a4 4 0 00-4-4h-4.586l-2-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                     )}
-                    <div className="flex text-sm text-gray-600 dark:text-gray-400">
-                        <button type="button" onClick={handleGenerateImage} disabled={isLoading} className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
-                            {loading === 'image' ? <div className="flex items-center gap-2">Generating... <Spinner size="sm"/></div> : <span>🖼️ Generate an image with AI</span>}
+                    <div className="flex justify-center text-sm">
+                        <button type="button" onClick={handleGenerateImage} disabled={isLoading} className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md px-4 py-2 font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 disabled:opacity-75 disabled:cursor-not-allowed">
+                            {loading === 'image' ? (
+                                <div className="text-gray-700 dark:text-gray-300">
+                                    <LoadingMessage type="image" size="sm" />
+                                </div>
+                            ) : (
+                                <span>🖼️ Generate an image with AI</span>
+                            )}
                         </button>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-500">Provide a title or content first</p>
@@ -190,8 +197,8 @@ const CreatePostPage: React.FC = () => {
         </div>
         
         <div>
-          <button type="submit" disabled={isLoading} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed">
-             {loading === 'saving' ? <Spinner size="sm"/> : 'Publish Post'}
+          <button type="submit" disabled={isLoading} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[48px]">
+             {loading === 'saving' ? <LoadingMessage type="saving" size="sm" /> : 'Publish Post'}
           </button>
         </div>
       </form>

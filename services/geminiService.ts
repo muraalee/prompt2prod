@@ -15,7 +15,7 @@ export const generateTitle = async (content: string): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Based on the following blog content, generate a compelling and concise title. The title should be no more than 10 words. Content: "${content}"`,
+      contents: `Based on the following blog content, generate a compelling and concise title. The title should be no more than 10 words. Content: "${content}" Respond only with title in proper grammar and punctuation and plain text. No markdown. `,
     });
     return response.text.trim().replace(/"/g, ''); // Clean up quotes
   } catch (error) {
@@ -29,7 +29,7 @@ export const generateContent = async (prompt: string): Promise<string> => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-pro',
-      contents: `Write a blog post about the following topic. The tone should be informative and engaging. Use paragraphs for readability. Topic: "${prompt}"`,
+      contents: `Write a blog post about the following topic. The tone should be informative and engaging. Use paragraphs for readability. Topic: "${prompt}" Respond only with title in proper grammar and punctuation and plain text. No markdown.`,
     });
     return response.text;
   } catch (error) {
@@ -43,7 +43,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
   try {
     const response = await ai.models.generateImages({
         model: 'imagen-4.0-generate-001',
-        prompt: `A high-quality, visually appealing blog post header image representing: "${prompt}". Cinematic, photorealistic.`,
+        prompt: `A high-quality, visually appealing blog post header image representing: "${prompt}". Cinematic, photorealistic. Respond only with title in proper grammar and punctuation and plain text. No markdown.`,
         config: {
           numberOfImages: 1,
           outputMimeType: 'image/jpeg',
