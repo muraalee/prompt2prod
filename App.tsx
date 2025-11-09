@@ -11,7 +11,6 @@ import type { BlogPost } from './types';
 import { PostsContext } from './contexts/PostsContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import * as firebaseService from './services/firebaseService';
-import { isFirebaseConfigured } from './firebaseConfig';
 import Alert from './components/Alert';
 
 function App() {
